@@ -22,7 +22,10 @@ namespace HWProducts.Core.Model
         public string Category { get; set; }
         public string Image { get; set; }
 
-
+        public Product()
+        {
+            this.Id = Guid.NewGuid().ToString();
+        }
 
 
     }

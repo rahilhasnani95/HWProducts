@@ -1,8 +1,10 @@
-﻿using HWProducts.Core.Model;
+﻿using HWProducts.Core.Contracts;
+using HWProducts.Core.Model;
 using HWProducts.Core.ViewModel;
 using HWProducts.DataAccess.InMemory;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -12,13 +14,19 @@ namespace HWProducts.WebUI.Controllers
     public class ProductManagerController : Controller
     {
         // GET: ProductManager
-        ProductRepository context;
-        ProductCategoryRepository productCategories;
+        //InMemoryRepository<Product> context;
+        //InMemoryRepository<ProductCategory> productCategories;
+        //changed from class repository to interface
 
-        public ProductManagerController()
+        IRepository<Product> context;
+        IRepository<ProductCategory> productCategories;
+
+        public ProductManagerController(IRepository<Product> productContext, IRepository<ProductCategory> categoryContext)
         {
-            context = new ProductRepository();
-            productCategories = new ProductCategoryRepository();
+            //context = new InMemoryRepository<Product>();
+            //productCategories = new InMemoryRepository<ProductCategory>();
+            context = productContext;
+            productCategories = categoryContext;
         }
 
         public ActionResult Index()
@@ -39,7 +47,7 @@ namespace HWProducts.WebUI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Product product)
+        public ActionResult Create(Product product, HttpPostedFileBase file)
         {
 
             if (!ModelState.IsValid)
@@ -48,6 +56,13 @@ namespace HWProducts.WebUI.Controllers
             }
             else
             {
+
+                if(file != null)
+                {
+                    product.Image = product.Id + Path.GetExtension(file.FileName);
+                    file.SaveAs(Server.MapPath("//Content//ProductImages//" + product.Image));
+                }
+
                 context.Insert(product);
                 context.Commit();
                 return RedirectToAction("Index");
@@ -64,6 +79,7 @@ namespace HWProducts.WebUI.Controllers
             }
             else
             {
+
                 ProductManagerViewModel vm = new ProductManagerViewModel();
                 vm.Product = product;
                 vm.productCategories = productCategories.Collection();
@@ -73,7 +89,7 @@ namespace HWProducts.WebUI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Product product, string id)
+        public ActionResult Edit(Product product, string id, HttpPostedFileBase file)
         {
             //context.Update(product);
             //context.Commit();
@@ -89,6 +105,12 @@ namespace HWProducts.WebUI.Controllers
                 {
                     return View(product);
                 }
+                if (file != null)
+                {
+                    product.Image = product.Id + Path.GetExtension(file.FileName);
+                    file.SaveAs(Server.MapPath("//Content//ProductImages//" + product.Image));
+                }
+                productToFind.Image = product.Image;
                 productToFind.Category = product.Category;
                 productToFind.Price = product.Price;
                 productToFind.Description = product.Description;

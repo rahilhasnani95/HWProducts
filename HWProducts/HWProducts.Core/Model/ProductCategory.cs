@@ -6,14 +6,16 @@ using System.Threading.Tasks;
 
 namespace HWProducts.Core.Model
 {
-    public class ProductCategory
+    public class ProductCategory : BaseEntity
     {
-        public string Id { get; set; }
+        //since its repeated we put in abstract class
+        //public string Id { get; set; }
         public string Category { get; set; }
 
-        public ProductCategory()
-        {
-            this.Id = Guid.NewGuid().ToString();
-        }
+        //since its repeated we put in abstract class
+        //public ProductCategory()
+        //{
+        //    this.Id = Guid.NewGuid().ToString();
+        //}
     }
 }

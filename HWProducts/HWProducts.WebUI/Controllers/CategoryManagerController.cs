@@ -1,4 +1,5 @@
-﻿using HWProducts.Core.Model;
+﻿using HWProducts.Core.Contracts;
+using HWProducts.Core.Model;
 using HWProducts.DataAccess.InMemory;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,11 @@ namespace HWProducts.WebUI.Controllers
     public class CategoryManagerController : Controller
     {
         // GET: ProductManager
-        ProductCategoryRepository context;
+        IRepository<ProductCategory> context;
 
-        public CategoryManagerController()
+        public CategoryManagerController(IRepository<ProductCategory> categoryContext)
         {
-            context = new ProductCategoryRepository();
+            context = categoryContext;
         }
 
         public ActionResult Index()
